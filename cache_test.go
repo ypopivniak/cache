@@ -397,6 +397,15 @@ var _ = Describe("Cache", func() {
 
 		testCache()
 	})
+
+	Context("with DefaultTTL", func() {
+		BeforeEach(func() {
+			rdb = newRing()
+			mycache = newCacheWithTTL(rdb)
+		})
+
+		testCache()
+	})
 })
 
 func newRing() *redis.Ring {
@@ -422,5 +431,13 @@ func newCacheWithLocal(rdb *redis.Ring) *cache.Cache {
 	return cache.New(&cache.Options{
 		Redis:      rdb,
 		LocalCache: cache.NewTinyLFU(1000, time.Minute),
+	})
+}
+
+func newCacheWithTTL(rdb *redis.Ring) *cache.Cache {
+	ttl := time.Minute
+	return cache.New(&cache.Options{
+		Redis:      rdb,
+		DefaultTTL: &ttl,
 	})
 }
